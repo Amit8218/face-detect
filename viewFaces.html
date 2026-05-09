@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Registered Faces Database</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #6366f1;
+      --primary-hover: #4f46e5;
+      --success: #10b981;
+      --danger: #ef4444;
+      --danger-hover: #dc2626;
+      --bg-dark: #0f172a;
+      --card-bg: rgba(30, 41, 59, 0.7);
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+    
+    body {
+      margin: 0;
+      padding: 40px 20px;
+      min-height: 100vh;
+      font-family: 'Inter', sans-serif;
+      background: radial-gradient(circle at top left, #1e1b4b, #0f172a);
+      color: var(--text-main);
+      box-sizing: border-box;
+    }
+
+    /* Ambient background shapes */
+    .bg-shape {
+      position: fixed;
+      filter: blur(120px);
+      z-index: -1;
+      opacity: 0.4;
+    }
+    .shape1 { top: -10%; left: -10%; width: 500px; height: 500px; background: #4338ca; border-radius: 50%; }
+    .shape2 { bottom: -10%; right: -10%; width: 600px; height: 600px; background: #312e81; border-radius: 50%; }
+
+    .header-container {
+      max-width: 1200px;
+      margin: 0 auto 40px auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+      z-index: 10;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 32px;
+      font-weight: 700;
+      background: linear-gradient(to right, #a5b4fc, #818cf8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 0 30px rgba(99, 102, 241, 0.3);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .back-btn {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-main);
+      padding: 10px 20px;
+      border-radius: 12px;
+      text-decoration: none;
+      font-weight: 500;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .back-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      transform: translateX(-4px);
+    }
+
+    #faces {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 24px;
+      z-index: 10;
+      position: relative;
+    }
+
+    .face-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 20px;
+      padding: 20px;
+      text-align: center;
+      transition: all 0.3s ease;
+      box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .face-card:hover {
+      transform: translateY(-5px);
+      border-color: rgba(99, 102, 241, 0.3);
+      box-shadow: 0 20px 40px -10px rgba(0,0,0,0.6), 0 0 20px rgba(99, 102, 241, 0.1);
+    }
+
+    .image-wrapper {
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      padding: 4px;
+      background: linear-gradient(135deg, var(--primary), #818cf8);
+      margin-bottom: 16px;
+      box-shadow: 0 8px 20px -5px rgba(99, 102, 241, 0.4);
+    }
+
+    .face-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 50%;
+      background: #0f172a;
+    }
+
+    .face-card .no-image {
+      width: 100%;
+      height: 100%;
+      background: #1e293b;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+    }
+
+    .student-id {
+      font-size: 18px;
+      font-weight: 600;
+      color: white;
+      margin-bottom: 6px;
+      letter-spacing: 0.5px;
+    }
+
+    .descriptors {
+      background: rgba(16, 185, 129, 0.1);
+      color: var(--success);
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 500;
+      margin-bottom: 20px;
+      display: inline-block;
+    }
+
+    .delete-btn {
+      width: 100%;
+      background: rgba(239, 68, 68, 0.1);
+      color: var(--danger);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+      padding: 10px 16px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      font-family: 'Inter', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .delete-btn:hover {
+      background: var(--danger);
+      color: white;
+      box-shadow: 0 8px 15px -5px rgba(239, 68, 68, 0.4);
+    }
+
+    .empty-state {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 60px 20px;
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      border-radius: 20px;
+      border: 1px dashed rgba(255,255,255,0.1);
+    }
+
+    .empty-state svg {
+      color: var(--text-muted);
+      margin-bottom: 16px;
+      width: 48px;
+      height: 48px;
+    }
+
+    .empty-state p {
+      color: var(--text-muted);
+      font-size: 16px;
+      margin: 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-shape shape1"></div>
+  <div class="bg-shape shape2"></div>
+
+  <div class="header-container">
+    <a href="registerFace.html" class="back-btn">
+      <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+      Back to Registration
+    </a>
+    <h1>
+      <svg width="28" height="28" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+      Face Database
+    </h1>
+  </div>
+  
+  <div id="faces">
+    <div style="grid-column: 1/-1; text-align: center; color: var(--text-muted);">Loading database...</div>
+  </div>
+
+  <script>
+    const API_BASE_URL = '/api/v1';
+    
+    async function loadFaces() {
+      try {
+        const res = await fetch(`${API_BASE_URL}/face/all`);
+        const data = await res.json();
+        const faces = data.data || [];
+        
+        if (faces.length === 0) {
+          document.getElementById('faces').innerHTML = `
+            <div class="empty-state">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path></svg>
+              <p>No registered faces found in the database.</p>
+            </div>
+          `;
+          return;
+        }
+        
+        document.getElementById('faces').innerHTML = faces.map(f => `
+          <div class="face-card">
+            <div class="image-wrapper">
+              ${f.image_data 
+                ? `<img src="${f.image_data}" alt="${f.label}">` 
+                : `<div class="no-image"><svg width="40" height="40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg></div>`
+              }
+            </div>
+            <div class="student-id">${f.label}</div>
+            <div class="descriptors">Valid Model Data</div>
+            <button class="delete-btn" onclick="deleteFace('${f.label}')">
+              <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+              Delete Record
+            </button>
+          </div>
+        `).join('');
+      } catch (e) {
+        console.error('Error loading faces:', e);
+        document.getElementById('faces').innerHTML = `
+          <div class="empty-state">
+            <p style="color: #ef4444;">Connection Error. Unable to reach the backend service.</p>
+          </div>
+        `;
+      }
+    }
+    
+    async function deleteFace(studentId) {
+      if (!confirm(`Are you sure you want to delete the record for ${studentId}?`)) return;
+      
+      try {
+        const res = await fetch(`${API_BASE_URL}/face/delete`, {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ student_ids: [studentId] })
+        });
+        
+        const result = await res.json();
+        if (result.success) {
+          loadFaces();
+        } else {
+          alert('✗ Failed to delete record');
+        }
+      } catch (e) {
+        console.error('Delete error:', e);
+        alert('✗ Error deleting record. Please try again later.');
+      }
+    }
+    
+    loadFaces();
+  </script>
+</body>
+</html>
