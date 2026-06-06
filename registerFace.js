@@ -1,9 +1,9 @@
-const video = document.getElementById('video');
+const video = document.getElementById('video')
 const statusDiv = document.getElementById('status');
 let labeledFaceDescriptors = [];
 let faceMatcher = null;
 let isModelLoaded = false;
-const API_BASE_URL = 'https://face-detect-d3eg.onrender.com/';
+const API_BASE_URL = "https://your-app.onrender.com/api/v1";
 
 async function loadModels() {
   try {
