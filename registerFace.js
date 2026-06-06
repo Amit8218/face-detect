@@ -3,7 +3,7 @@ const statusDiv = document.getElementById('status');
 let labeledFaceDescriptors = [];
 let faceMatcher = null;
 let isModelLoaded = false;
-const API_BASE_URL = "https://your-app.onrender.com/api/v1";
+const API_BASE_URL = "https://https://face-detect-d3eg.onrender.com/registerFace.html/api/v1";
 
 async function loadModels() {
   try {
